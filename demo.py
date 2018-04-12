@@ -22,7 +22,25 @@ unit = raw_input("Unit:")
 g = nx.Graph()
 
 
-
+'''
+A still more efficient method is the cell method where 
+the unit square is partitioned into a grid of 1 cells 
+of size r*r and each vertex is put inthe appropriate 
+cell as in bucket sort. The neighborsof each vertex 
+are then determined by checking the distance of the 
+vertex from all vertices of the nine cells
+including and bounding the cell containing the vertex.
+The expected number of pairwise distances checked is
+then O(n2r2) generating the graph in O(n). Further-
+more, the cell method is optimal in the sense of having
+expected behavior per vertex of checking only a con-
+stant times the average degree of each vertex, where
+that constant is asymptotically 9 , as illustrated by the π
+coverage ranges shown in Figure 3b. As illustrated in Figures 3a and 3b, 
+the totality of edges may be found by checking vertex vi only against 
+others in the shaded vertical strip for the lexicographic sweep 
+line method or on the shaded pentonimo for the cell method as we me-
+'''
 start = time.time()
 #data = []
 
@@ -32,7 +50,20 @@ if unit == "Sq":
 		x = random.random()
 		y = random.random()
 		g.add_node((x,y))
-		for node in g.nodes():
+		cell_n = (x//r,y//r)
+		cell = defaultdict(set)
+		cell[cell_n].add((x,y))
+		if cell_n[0]-1<0:
+			cell_n[0]-1 = 0
+		if cell_n[1]-1<0:
+			cell_n[1]-1 = 0
+		if cell_n[0]+1>1/r:
+			cell_n[0]+1 = 1/r
+		if cell_n[1]+1>1/r:
+			cell_n[1]+1 = 1/r
+		sourroundings = cell[cell_n]|cell[(cell_n[0]-1,cell_n[1]+1)]|cell[(cell_n[0],cell_n[1]+1)]|cell[(cell_n[0]-1,cell_n[1])]|cell[(cell_n[0]-1,cell_n[1]-1)]
+		print "hello"
+		for node in sourroundings:
 			dis = abs(node[0]*node[0] - x*x)+abs(node[1]*node[1] - y*y)
 			if dis<=r*r and dis>0:
 				g.add_edge((x,y),node)
@@ -57,8 +88,8 @@ elif unit == "Di":
 	for n in range(N):
 		radius = random.random()
 		angle = random.uniform(0,math.pi*2)
-		x = radius*math.cos(angle)
-		y = radius*math.sin(angle)
+		x = math.sqrt(radius*math.cos(angle))
+		y = math.sqrt(radius*math.sin(angle))
 		g.add_node((x,y))
 		for node in g.nodes():
 			dis = math.sqrt(abs(node[0]*node[0] - x*x)+abs(node[1]*node[1] - y*y))
@@ -74,7 +105,7 @@ elif unit == "Di":
 
 elif unit == "Sp":# need revised because of radius is not right
 	data = []
-	r = math.sqrt(aveDegree/N)
+	r = math.sqrt(4*aveDegree/N)
 	for n in range(N):
 		theta = random.uniform(0,math.pi*2)
 		phi = random.uniform(0,math.pi*2)
