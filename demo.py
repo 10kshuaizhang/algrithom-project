@@ -10,7 +10,7 @@ import random
 import math
 import time
 import pyecharts
-from SmallestLastColor import SmallestLastColor
+#from SmallestLastColor import SmallestLastColor
 import time
 from collections import defaultdict
 
@@ -46,34 +46,35 @@ start = time.time()
 
 if unit == "Sq":	
 	r = math.sqrt(aveDegree/(N*math.pi))	
+	cell = {}
+	for i in range(int(1/r)+1):
+		for j in range(int(1/r)+1):
+			cell[(float(i),float(j))] = set()
 	for _ in range(N):
 		x = random.random()
 		y = random.random()
 		g.add_node((x,y))
 		cell_n = (x//r,y//r)
-		cell = defaultdict(set)
-		cell[cell_n].add((x,y))
-		if cell_n[0]-1<0:
-			cell_n[0]-1 = 0
-		if cell_n[1]-1<0:
-			cell_n[1]-1 = 0
-		if cell_n[0]+1>1/r:
-			cell_n[0]+1 = 1/r
-		if cell_n[1]+1>1/r:
-			cell_n[1]+1 = 1/r
-		sourroundings = cell[cell_n]|cell[(cell_n[0]-1,cell_n[1]+1)]|cell[(cell_n[0],cell_n[1]+1)]|cell[(cell_n[0]-1,cell_n[1])]|cell[(cell_n[0]-1,cell_n[1]-1)]
-		print "hello"
+		#cell = defaultdict(set)
+		#cell = {}
+		if cell_n in cell:
+			cell[cell_n].add((x,y))
+		else:
+			cell[cell_n] = set((x,y))
+		sourroundings = cell[(x//r,y//r)]
+		if cell_n[0]-1>0 and cell_n[1]-1>0 and cell_n[0]+1<1/r and cell_n[1]+1<1/r:
+			sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r-1)]|cell[(x//r-1,y//r+1)]|cell[(x//r+1,y//r-1)]|cell[(x//r+1,y//r)]|cell[(x//r+1,y//r+1)]|cell[(x//r,y//r+1)]|cell[(x//r,y//r-1)]
 		for node in sourroundings:
-			dis = abs(node[0]*node[0] - x*x)+abs(node[1]*node[1] - y*y)
+			dis = (node[0]-x)*(node[0]-x)+(node[1]-y)*(node[1]-y)
 			if dis<=r*r and dis>0:
-				g.add_edge((x,y),node)
+				g.add_edge((x,y),(node[0],node[1]))
 		'''v1 = [node[0] for node in g.nodes()]
-		v2 = [node[1] for node in g.nodes()]
-		es = pyecharts.Scatter("demo")
-		es.height = 800
-		es.width = 800
-		es.add("effectScatter", v1, v2,symbol_size = 5)
-		es.render()'''
+								v2 = [node[1] for node in g.nodes()]
+								es = pyecharts.Scatter("demo")
+								es.height = 800
+								es.width = 800
+								es.add("effectScatter", v1, v2,symbol_size = r*100)
+								es.render()'''
 	#colors = [n for n in range(N)]
 	#print nx.algorithms.coloring.strategy_smallest_last(g,colors)
 	#SmallestLastColor(g)
@@ -141,8 +142,8 @@ for node in g.nodes():
 degreeList = defaultdict(set)#set is faster than list in some way
 for node,d in g.degree:
 	degreeList[d].add(node)
-for k in degreeList:
-	print k,len(degreeList[k])
+#for k in degreeList:
+	#print k,len(degreeList[k])
 print "number_of_nodes:",g.number_of_nodes()
 print "number_of_edges:",g.number_of_edges()
 print "MAX:",MAX
