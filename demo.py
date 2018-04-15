@@ -13,6 +13,9 @@ import pyecharts
 #from SmallestLastColor import SmallestLastColor
 import time
 from collections import defaultdict
+import matplotlib.pyplot as plt 
+from matplotlib.lines import Line2D
+
 
 
 
@@ -64,36 +67,100 @@ if unit == "Sq":
 		sourroundings = cell[(x//r,y//r)]
 		if cell_n[0]-1>0 and cell_n[1]-1>0 and cell_n[0]+1<1/r and cell_n[1]+1<1/r:
 			sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r-1)]|cell[(x//r-1,y//r+1)]|cell[(x//r+1,y//r-1)]|cell[(x//r+1,y//r)]|cell[(x//r+1,y//r+1)]|cell[(x//r,y//r+1)]|cell[(x//r,y//r-1)]
-		for node in sourroundings:
-			dis = (node[0]-x)*(node[0]-x)+(node[1]-y)*(node[1]-y)
-			if dis<=r*r and dis>0:
-				g.add_edge((x,y),(node[0],node[1]))
-		'''v1 = [node[0] for node in g.nodes()]
-								v2 = [node[1] for node in g.nodes()]
-								es = pyecharts.Scatter("demo")
-								es.height = 800
-								es.width = 800
-								es.add("effectScatter", v1, v2,symbol_size = r*100)
-								es.render()'''
+		'''elif cell_n[0]-1<0 and cell_n[1]-1>0 and cell_n[0]+1<1/r and cell_n[1]+1<1/r:
+									sourroundings|cell[(x//r+1,y//r-1)]|cell[(x//r+1,y//r)]|cell[(x//r+1,y//r+1)]|cell[(x//r,y//r+1)]|cell[(x//r,y//r-1)]
+								elif cell_n[0]-1>0 and cell_n[1]-1<0 and cell_n[0]+1<1/r and cell_n[1]+1<1/r:
+									sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r+1)]|cell[(x//r+1,y//r)]|cell[(x//r+1,y//r+1)]|cell[(x//r,y//r+1)]
+								elif cell_n[0]-1>0 and cell_n[1]-1>0 and cell_n[0]+1<1/r and cell_n[1]+1>1/r:
+									sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r-1)]|cell[(x//r+1,y//r-1)]|cell[(x//r+1,y//r)]|cell[(x//r,y//r-1)]
+								elif cell_n[0]-1>0 and cell_n[1]-1>0 and cell_n[0]+1>1/r and cell_n[1]+1<1/r:
+									sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r-1)]|cell[(x//r-1,y//r+1)]|cell[(x//r,y//r+1)]|cell[(x//r,y//r-1)]
+		
+						'''
+		'''if N<=8000:
+			for node in sourroundings:
+				dis = (node[0]-x)*(node[0]-x)+(node[1]-y)*(node[1]-y)
+				if dis<=r*r and dis>0:
+					g.add_edge((x,y),(node[0],node[1]))
+					#figure, ax = plt.subplots()
+					line1 = [(x,y),(node[0],node[1])]
+					(line1_xs, line1_ys) = zip(*line1)
+					plt.add_line(Line2D(line1_xs, line1_ys, linewidth=1, color='blue'))
+
+		else:
+			for node in sourroundings:
+				dis = (node[0]-x)*(node[0]-x)+(node[1]-y)*(node[1]-y)
+				if dis<=r*r and dis>0:
+					g.add_edge((x,y),(node[0],node[1]))
+
+'''
+	MAX = 0
+	MIN = N
+	SUM = 0
+	for node in g.nodes():
+		if g.degree(node) >= MAX:
+			MAX = g.degree(node)
+		elif g.degree(node) <= MIN:
+			MIN = g.degree(node)
+		SUM += g.degree(node)
+	for node in g.nodes():
+		if g.degree(node) == MAX:
+			g.nodes[node]['color']= "yellow"
+		if g.degree(node) == MIN:
+			g.nodes[node]['color'] = "yellow"
+	
+
+
+	"""v1 = [node[0] for node in g.nodes()]
+	v2 = [node[1] for node in g.nodes()]
+	plt.scatter(v1,v2)"""
+	#plt.plot()
+	#plt.show() 
+	'''v1 = [node[0] for node in g.nodes()]
+		v2 = [node[1] for node in g.nodes()]
+		es = pyecharts.Scatter("demo")
+		es.height = 800
+		es.width = 800
+		es.add("effectScatter", v1, v2,symbol_size = r*100)
+		es.render()
 	#colors = [n for n in range(N)]
 	#print nx.algorithms.coloring.strategy_smallest_last(g,colors)
 	#SmallestLastColor(g)
 
-		'''v1 = [node[0] for node in g.nodes()]
+		v1 = [node[0] for node in g.nodes()]
 		v2 = [node[1] for node in g.nodes()]
 		es = pyecharts.Scatter("demo")
 		es.add("effectScatter", v1, v2)
 		es.render()'''
 elif unit == "Di":
 	r = math.sqrt(aveDegree/N)
-	for n in range(N):
+	cell = {}
+	for i in range(int(1/r)+1):
+		for j in range(int(1/r)+1):
+			cell[(float(i),float(j))] = set()
+	for _ in range(N):
 		radius = random.random()
 		angle = random.uniform(0,math.pi*2)
-		x = math.sqrt(radius*math.cos(angle))
-		y = math.sqrt(radius*math.sin(angle))
+		if radius*math.cos(angle)>=0:
+			x = math.sqrt(radius*math.cos(angle))
+		else:
+			x = 0-math.sqrt(radius*math.cos(angle))
+		if radius*math.sin(angle)>=0:
+			y = math.sqrt(-1*radius*math.sin(angle))
+		else:
+			y = 0-math.sqrt(-1*radius*math.sin(angle))
 		g.add_node((x,y))
-		for node in g.nodes():
-			dis = math.sqrt(abs(node[0]*node[0] - x*x)+abs(node[1]*node[1] - y*y))
+		cell_n = (x//r,y//r)
+		if cell_n in cell:
+			cell[cell_n].add((x,y))
+		else:
+			cell[cell_n] = set((x,y))
+		sourroundings = cell[(x//r,y//r)]
+		if cell_n[0]-1>0 and cell_n[1]-1>0 and cell_n[0]+1<1/r and cell_n[1]+1<1/r:
+			sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r-1)]|cell[(x//r-1,y//r+1)]|cell[(x//r+1,y//r-1)]|cell[(x//r+1,y//r)]|cell[(x//r+1,y//r+1)]|cell[(x//r,y//r+1)]|cell[(x//r,y//r-1)]
+
+		for node in sourroundings:
+			dis = (node[0]-x)*(node[0]-x)+(node[1]-y)*(node[1]-y)
 			if dis<=r and dis>0:
 				g.add_edge((x,y),node)
 		v1 = [node[0] for node in g.nodes()]
@@ -101,7 +168,7 @@ elif unit == "Di":
 		es = pyecharts.Scatter("demo")
 		es.height = 800
 		es.width = 800
-		es.add("effectScatter", v1, v2,symbol_size = 5)
+		es.add("effectScatter", v1, v2)
 		es.render()
 
 elif unit == "Sp":# need revised because of radius is not right
@@ -116,7 +183,7 @@ elif unit == "Sp":# need revised because of radius is not right
 		data.append([x,y,z])
 		g.add_node((x,y,z))
 		for node in g.nodes():
-			dis = math.sqrt(abs(node[0]*node[0] - x*x)+abs(node[1]*node[1] - y*y)+abs(node[2]*node[2] - z*z))
+			dis = (node[0]-x)*(node[0]-x)+(node[1]-y)*(node[1]-y)+(node[2]-z)*(node[2]-z)
 			if dis<=r and dis>0:
 				g.add_edge((x,y,z),node)
 	S3 = pyecharts.Scatter3D("demo", width=1200, height=600)
@@ -142,8 +209,8 @@ for node in g.nodes():
 degreeList = defaultdict(set)#set is faster than list in some way
 for node,d in g.degree:
 	degreeList[d].add(node)
-#for k in degreeList:
-	#print k,len(degreeList[k])
+for k in degreeList:
+	print k,len(degreeList[k])
 print "number_of_nodes:",g.number_of_nodes()
 print "number_of_edges:",g.number_of_edges()
 print "MAX:",MAX
