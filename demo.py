@@ -14,7 +14,6 @@ import pyecharts
 import time
 from collections import defaultdict
 import matplotlib.pyplot as plt 
-from matplotlib.lines import Line2D
 
 
 
@@ -52,7 +51,7 @@ if unit == "Sq":
 	cell = {}
 	for i in range(int(1/r)+1):
 		for j in range(int(1/r)+1):
-			cell[(float(i),float(j))] = set()
+			cell[(i,j)] = set()
 	for _ in range(N):
 		x = random.random()
 		y = random.random()
@@ -65,73 +64,30 @@ if unit == "Sq":
 		else:
 			cell[cell_n] = set((x,y))
 		sourroundings = cell[(x//r,y//r)]
-		if cell_n[0]-1>0 and cell_n[1]-1>0 and cell_n[0]+1<1/r and cell_n[1]+1<1/r:
-			sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r-1)]|cell[(x//r-1,y//r+1)]|cell[(x//r+1,y//r-1)]|cell[(x//r+1,y//r)]|cell[(x//r+1,y//r+1)]|cell[(x//r,y//r+1)]|cell[(x//r,y//r-1)]
-		'''elif cell_n[0]-1<0 and cell_n[1]-1>0 and cell_n[0]+1<1/r and cell_n[1]+1<1/r:
-									sourroundings|cell[(x//r+1,y//r-1)]|cell[(x//r+1,y//r)]|cell[(x//r+1,y//r+1)]|cell[(x//r,y//r+1)]|cell[(x//r,y//r-1)]
-								elif cell_n[0]-1>0 and cell_n[1]-1<0 and cell_n[0]+1<1/r and cell_n[1]+1<1/r:
-									sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r+1)]|cell[(x//r+1,y//r)]|cell[(x//r+1,y//r+1)]|cell[(x//r,y//r+1)]
-								elif cell_n[0]-1>0 and cell_n[1]-1>0 and cell_n[0]+1<1/r and cell_n[1]+1>1/r:
-									sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r-1)]|cell[(x//r+1,y//r-1)]|cell[(x//r+1,y//r)]|cell[(x//r,y//r-1)]
-								elif cell_n[0]-1>0 and cell_n[1]-1>0 and cell_n[0]+1>1/r and cell_n[1]+1<1/r:
-									sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r-1)]|cell[(x//r-1,y//r+1)]|cell[(x//r,y//r+1)]|cell[(x//r,y//r-1)]
+
+		if cell_n[0]-1>=0 and cell_n[1]-1>=0 and cell_n[0]+1<=1/r and cell_n[1]+1<=1/r:
+			sourroundings = sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r-1)]|cell[(x//r-1,y//r+1)]|cell[(x//r+1,y//r-1)]|cell[(x//r+1,y//r)]|cell[(x//r+1,y//r+1)]|cell[(x//r,y//r+1)]|cell[(x//r,y//r-1)]
 		
-						'''
-		'''if N<=8000:
-			for node in sourroundings:
-				dis = (node[0]-x)*(node[0]-x)+(node[1]-y)*(node[1]-y)
-				if dis<=r*r and dis>0:
-					g.add_edge((x,y),(node[0],node[1]))
-					#figure, ax = plt.subplots()
-					line1 = [(x,y),(node[0],node[1])]
-					(line1_xs, line1_ys) = zip(*line1)
-					plt.add_line(Line2D(line1_xs, line1_ys, linewidth=1, color='blue'))
-
-		else:
-			for node in sourroundings:
-				dis = (node[0]-x)*(node[0]-x)+(node[1]-y)*(node[1]-y)
-				if dis<=r*r and dis>0:
-					g.add_edge((x,y),(node[0],node[1]))
-
-'''
-	MAX = 0
-	MIN = N
-	SUM = 0
-	for node in g.nodes():
-		if g.degree(node) >= MAX:
-			MAX = g.degree(node)
-		elif g.degree(node) <= MIN:
-			MIN = g.degree(node)
-		SUM += g.degree(node)
-	for node in g.nodes():
-		if g.degree(node) == MAX:
-			g.nodes[node]['color']= "yellow"
-		if g.degree(node) == MIN:
-			g.nodes[node]['color'] = "yellow"
-	
+		if cell_n[0]-1<=0 and cell_n[1]-1>=0 and cell_n[0]+1<=1/r and cell_n[1]+1<=1/r:
+			sourroundings = sourroundings|cell[(x//r+1,y//r-1)]|cell[(x//r+1,y//r)]|cell[(x//r+1,y//r+1)]|cell[(x//r,y//r+1)]|cell[(x//r,y//r-1)]
+		if cell_n[0]-1>=0 and cell_n[1]-1<=0 and cell_n[0]+1<=1/r and cell_n[1]+1<=1/r:
+			sourroundings = sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r+1)]|cell[(x//r+1,y//r)]|cell[(x//r+1,y//r+1)]|cell[(x//r,y//r+1)]
+		if cell_n[0]-1>=0 and cell_n[1]-1>=0 and cell_n[0]+1<=1/r and cell_n[1]+1>=1/r:
+			sourroundings = sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r-1)]|cell[(x//r+1,y//r-1)]|cell[(x//r+1,y//r)]|cell[(x//r,y//r-1)]
+		if cell_n[0]-1>=0 and cell_n[1]-1>=0 and cell_n[0]+1>=1/r and cell_n[1]+1<=1/r:
+			sourroundings = sourroundings|cell[(x//r-1,y//r)]|cell[(x//r-1,y//r-1)]|cell[(x//r-1,y//r+1)]|cell[(x//r,y//r+1)]|cell[(x//r,y//r-1)]
 
 
-	"""v1 = [node[0] for node in g.nodes()]
-	v2 = [node[1] for node in g.nodes()]
-	plt.scatter(v1,v2)"""
-	#plt.plot()
-	#plt.show() 
-	'''v1 = [node[0] for node in g.nodes()]
-		v2 = [node[1] for node in g.nodes()]
-		es = pyecharts.Scatter("demo")
-		es.height = 800
-		es.width = 800
-		es.add("effectScatter", v1, v2,symbol_size = r*100)
-		es.render()
+
+		for node in sourroundings:
+			dis = (node[0]-x)*(node[0]-x)+(node[1]-y)*(node[1]-y)
+			if dis<=r*r and dis>0:
+				g.add_edge((x,y),(node[0],node[1]))
+	#nx.draw(g)
+
 	#colors = [n for n in range(N)]
 	#print nx.algorithms.coloring.strategy_smallest_last(g,colors)
 	#SmallestLastColor(g)
-
-		v1 = [node[0] for node in g.nodes()]
-		v2 = [node[1] for node in g.nodes()]
-		es = pyecharts.Scatter("demo")
-		es.add("effectScatter", v1, v2)
-		es.render()'''
 elif unit == "Di":
 	r = math.sqrt(aveDegree/N)
 	cell = {}
@@ -203,12 +159,15 @@ SUM = 0
 for node in g.nodes():
 	if g.degree(node) >= MAX:
 		MAX = g.degree(node)
+		max_node = node
 	elif g.degree(node) <= MIN:
 		MIN = g.degree(node)
+		min_node = node
 	SUM += g.degree(node)
 degreeList = defaultdict(set)#set is faster than list in some way
 for node,d in g.degree:
 	degreeList[d].add(node)
+	
 for k in degreeList:
 	print k,len(degreeList[k])
 print "number_of_nodes:",g.number_of_nodes()
@@ -217,4 +176,15 @@ print "MAX:",MAX
 print "MIN:",MIN
 print "R:", r
 print "AVE:",SUM/N
+v1 = [node[0] for node in g.nodes()]
+v2 = [node[1] for node in g.nodes()]
+plt.scatter(v1,v2,linewidths= r,alpha = 0.5)
+plt.axis("equal")
+plt.scatter(max_node[0],max_node[1],color= 'red',linewidths= 3)
+plt.scatter(min_node[0],min_node[1],color= 'yellow',linewidths= 3)
+if N<=8000:
+	for edge in g.edges():
+		plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]],linewidth=0.5,color='green',alpha =0.5)
+
+plt.show()
 
